@@ -10,7 +10,8 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 // and tie the store with any connected react components
 import { Provider } from 'react-redux';
-
+// Figure out what components would have rendered based on URL
+import { renderRoutes } from 'react-router-config';
 import Routes from './Routes';
 import reducers from './reducers';
 
@@ -18,10 +19,11 @@ const store = createStore(reducers, {}, applyMiddleware(thunk));
 
 // Re-render on client side over the skeleton rendered by the server whatever's missing, e.g. event handlers.
 // Use hydrate() instead of render()
+// Instead of a Routes component use a div with react-router-config module which is passed an array of routes
 ReactDOM.hydrate(
   <Provider store={store}>
     <BrowserRouter>
-      <Routes />
+      <div>{renderRoutes(Routes)}</div>
     </BrowserRouter>
   </Provider>,
   document.querySelector('#root')

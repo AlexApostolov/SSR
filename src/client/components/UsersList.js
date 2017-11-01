@@ -27,4 +27,15 @@ function mapStateToProps(state) {
   return { users: state.users };
 }
 
+// loadData gets the server side redux store
+function loadData(store) {
+  // Manually dispatch fetchUsers action creator to redux store
+  // Return a promise that represents the network request that's going to the API
+  return store.dispatch(fetchUsers());
+}
+
+// loadData is exported as a named export,
+// and initiates a data loading process for required data needed by the component
+export { loadData };
+
 export default connect(mapStateToProps, { fetchUsers })(UsersList);
