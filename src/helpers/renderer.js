@@ -2,18 +2,21 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import Routes from '../client/Routes';
 
 // Export a function that takes the renderToString function, & takes the content to inject it into the template
-export default req => {
+export default (req, store) => {
   // Essentially the boot up location on the server side
   // StaticRouter requires the "context" prop which we're not using ATM, so we pass an empty object
   // StaticRouter, unlike BrowserRouter, needs to be told exactly the current path
   // that it needs to consider--can't read the browser address bar--by passing the request object
   const content = renderToString(
-    <StaticRouter location={req.path} context={{}}>
-      <Routes />
-    </StaticRouter>
+    <Provider store={store}>
+      <StaticRouter location={req.path} context={{}}>
+        <Routes />
+      </StaticRouter>
+    </Provider>
   );
 
   return `
