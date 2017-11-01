@@ -34,8 +34,8 @@ function loadData(store) {
   return store.dispatch(fetchUsers());
 }
 
-// loadData is exported as a named export,
-// and initiates a data loading process for required data needed by the component
-export { loadData };
-
-export default connect(mapStateToProps, { fetchUsers })(UsersList);
+export default {
+  // loadData initiates a data loading process for required data needed by the component
+  loadData,
+  component: connect(mapStateToProps, { fetchUsers })(UsersList)
+};
