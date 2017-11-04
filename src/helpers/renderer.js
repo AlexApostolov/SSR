@@ -10,14 +10,18 @@ import serialize from 'serialize-javascript';
 import Routes from '../client/Routes';
 
 // Export a function that takes the renderToString function, & takes the content to inject it into the template
-export default (req, store) => {
+// It will also receive the empty "context" object from the Express route used for error handling
+export default (req, store, context) => {
   // Essentially the boot up location on the server side
-  // StaticRouter requires the "context" prop which we're not using ATM, so we pass an empty object
+
+  // StaticRouter requires the "context" prop--gives the ability to communicate from the rendered components
+  // back to this renderer file
+
   // StaticRouter, unlike BrowserRouter, needs to be told exactly the current path
   // that it needs to consider--can't read the browser address bar--by passing the request object
   const content = renderToString(
     <Provider store={store}>
-      <StaticRouter location={req.path} context={{}}>
+      <StaticRouter location={req.path} context={context}>
         <div>{renderRoutes(Routes)}</div>
       </StaticRouter>
     </Provider>

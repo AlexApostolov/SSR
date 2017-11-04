@@ -1,4 +1,5 @@
 // Routes shared by both the client and server
+
 import React from 'react';
 // Container component for all page components & reusable components
 import App from './App';
@@ -9,6 +10,7 @@ import App from './App';
 import HomePage from './pages/HomePage';
 import UsersListPage from './pages/UsersListPage';
 import NotFoundPage from './pages/NotFoundPage';
+import AdminsListPage from './pages/AdminsListPage';
 
 // Component to set up all the different route mappings
 export default [
@@ -26,6 +28,10 @@ export default [
         ...HomePage,
         path: '/',
         exact: true
+      },
+      {
+        ...AdminsListPage,
+        path: '/admins'
       },
       {
         // For each path, there's a component to show

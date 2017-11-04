@@ -25,3 +25,14 @@ export const fetchCurrentUser = () => async (dispatch, getState, api) => {
     payload: res
   });
 };
+
+// Action creator for fetching list of admins to show on Admins page
+export const FETCH_ADMINS = 'fetch_admins';
+export const fetchAdmins = () => async (dispatch, getState, api) => {
+  const res = await api.get('/admins');
+
+  dispatch({
+    type: FETCH_ADMINS,
+    payload: res
+  });
+};

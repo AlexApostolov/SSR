@@ -1,4 +1,5 @@
 // Startup point for the client side application
+
 // Execute module and polyfill async/await syntax for babel
 import 'babel-polyfill';
 import React from 'react';

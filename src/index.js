@@ -40,17 +40,46 @@ app.get('*', (req, res) => {
   // Take incoming request path, and look at route config object to decide what components need to be rendered
   // 1st arg is list of routes, 2nd arg is the path user is fetching
   // It returns as an array of promises, representing all the pending network requests from all the action creators
-  const promises = matchRoutes(Routes, req.path).map(({ route }) => {
-    // Check if a component has a loadData first, since not all might
-    // Run each component's loadData function, storing what it returns
-    // All loadData functions will have a reference to the server side redux store
-    return route.loadData ? route.loadData(store) : null;
-  });
+  const promises = matchRoutes(Routes, req.path)
+    .map(({ route }) => {
+      // Check if a component has a loadData first, since not all might
+      // Run each component's loadData function, storing what it returns
+      // All loadData functions will have a reference to the server side redux store
+      return route.loadData ? route.loadData(store) : null;
+      // If one promise in Promise.all is rejected, it will immediately shortcircuit to its catch statement.
+      // So take all of those promises collected from all loadData functions and wrap them inside a new promise.
+    })
+    .map(promise => {
+      if (promise) {
+        // This outer promise will always be resolved regardless if the inner promise is resolved/rejected.
+        return new Promise((resolve, reject) => {
+          // Now every single request is given the opportunity to complete before attempting to render the page.
+          promise.then(resolve).catch(resolve);
+        });
+      }
+    });
 
   Promise.all(promises).then(() => {
+    // Create empty object for "context" & provide it to renderer.js
+    // If something went wrong in one of the components, the context object is marked with an error message
+    const context = {};
     // All data loading requests must be completed by the point--list of promises have been resolved
+    const content = renderer(req, store, context);
+
+    // When we render the page on the server, while not authenticated,
+    // the requireAuth HOC is going to attempt to render the <Redirect>,
+    // the server's static router is going to add a new context property, so the context object needs to be inspected.
+    if (context.url) {
+      return res.redirect(303, context.url);
+    }
+    // After rendering, examine the "context" object--does it contain an error from NotFoundPage?
+    // Send back a 404 status
+    if (context.notFound) {
+      res.status(404);
+    }
+
     // Render the app with the collected data
-    res.send(renderer(req, store));
+    res.send(content);
   });
 });
 
