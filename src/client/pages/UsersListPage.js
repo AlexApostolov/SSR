@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchUsers } from '../actions';
+import { Helmet } from 'react-helmet';
 
 class UsersList extends Component {
   componentDidMount() {
@@ -13,9 +14,24 @@ class UsersList extends Component {
     });
   }
 
+  // User visits route -> Helmet tag is rendered ->
+  // Then on renderer.js Helmet loads up all meta tags -> Helmet tags added to HTML template
+  // Can also change the title dynamically on the fly, e.g. access users list,
+  // but must be passed as single string expression.
+  // So instead of {this.props.users.length} Users Loaded, use template string inside Title tag
+  head() {
+    return (
+      <Helmet>
+        <title>{`${this.props.users.length} Users Loaded`}</title>
+        <meta property="og:title" content="User's App" />
+      </Helmet>
+    );
+  }
+
   render() {
     return (
       <div>
+        {this.head()}
         Here's a big list of users:
         <ul>{this.renderUsers()}</ul>
       </div>
